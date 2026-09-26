@@ -22,10 +22,15 @@ export default function AppShell({ children, onUploadClick, uploading }: AppShel
 
   return (
     <div className="app-shell">
+      {/* Accessibility Skip Link */}
+      <a href="#main-content" className="skip-link">
+        Skip to main content
+      </a>
+
       {/* Mobile Top App Bar */}
-      <header className="mobile-header">
-        <Link href="/" className="mobile-brand">
-          <span className="brand-mark">⚖</span>
+      <header className="mobile-header" role="banner">
+        <Link href="/" className="mobile-brand" aria-label="Legal Lens Home">
+          <span className="brand-mark" aria-hidden="true">⚖</span>
           <div className="brand-text">
             <span className="brand-title">LEGAL<span>LENS</span></span>
             <span className="brand-tagline">GenAI LEGAL ASSISTANCE</span>
@@ -38,20 +43,22 @@ export default function AppShell({ children, onUploadClick, uploading }: AppShel
               onClick={onUploadClick}
               disabled={uploading}
               className="mobile-upload-btn"
-              aria-label="Upload document"
+              aria-label="Upload legal document for analysis"
             >
               {uploading ? '…' : '↑ Add'}
             </button>
           )}
-          <span className="avatar avatar-sm" title="Active Legal Analyst">LR</span>
+          <span className="avatar avatar-sm" title="Active Legal Analyst" aria-label="Active Legal Analyst Profile">
+            LR
+          </span>
         </div>
       </header>
 
-      {/* Desktop Sidebar */}
-      <aside className="sidebar desktop-only">
-        <Link href="/" style={{ textDecoration: 'none' }}>
+      {/* Desktop Navigation Sidebar */}
+      <aside className="sidebar desktop-only" aria-label="Primary Navigation">
+        <Link href="/" style={{ textDecoration: 'none' }} aria-label="Legal Lens Workspace Home">
           <div className="brand">
-            <span className="brand-mark">⚖</span>
+            <span className="brand-mark" aria-hidden="true">⚖</span>
             <div className="brand-text">
               <span className="brand-title">LEGAL<span>LENS</span></span>
               <span className="brand-tagline">GenAI LEGAL ASSISTANCE</span>
@@ -59,8 +66,8 @@ export default function AppShell({ children, onUploadClick, uploading }: AppShel
           </div>
         </Link>
 
-        <p className="sidebar-label">WORKSPACE</p>
-        <nav>
+        <p className="sidebar-label" id="workspace-nav-heading">WORKSPACE</p>
+        <nav role="navigation" aria-labelledby="workspace-nav-heading">
           {navItems.map((item) => {
             const isActive = currentPath === item.href;
             return (
@@ -68,8 +75,9 @@ export default function AppShell({ children, onUploadClick, uploading }: AppShel
                 key={item.href}
                 href={item.href}
                 className={`nav-item ${isActive ? 'active' : ''}`}
+                aria-current={isActive ? 'page' : undefined}
               >
-                <span className="nav-item-icon">{item.icon}</span>
+                <span className="nav-item-icon" aria-hidden="true">{item.icon}</span>
                 <span>{item.fullLabel || item.label}</span>
               </Link>
             );
@@ -77,8 +85,8 @@ export default function AppShell({ children, onUploadClick, uploading }: AppShel
         </nav>
 
         <div className="sidebar-bottom">
-          <div className="privacy-note">
-            <span className="status-dot green"></span>
+          <div className="privacy-note" role="status" aria-live="polite">
+            <span className="status-dot green" aria-hidden="true"></span>
             <div>
               <p className="privacy-title">Gemini GenAI Active</p>
               <p className="privacy-sub">Google Gemini 1.5 Flash</p>
@@ -87,7 +95,7 @@ export default function AppShell({ children, onUploadClick, uploading }: AppShel
         </div>
       </aside>
 
-      {/* Main Content Area */}
+      {/* Main Accessible Content Region */}
       <div className="content-area">
         {children}
       </div>

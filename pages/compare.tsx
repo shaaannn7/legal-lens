@@ -136,7 +136,7 @@ export default function ComparePage() {
 
   return (
     <AppShell>
-      <main className="workspace">
+      <main id="main-content" tabIndex={-1} className="workspace">
         <header className="topbar">
           <div>
             <p className="eyebrow">LEGAL LENS · REDLINE & REVISION COMPARISON</p>

@@ -84,7 +84,7 @@ export default function SavedQuestionsPage() {
 
   return (
     <AppShell>
-      <main className="workspace">
+      <main id="main-content" tabIndex={-1} className="workspace">
         <header className="topbar">
           <div>
             <p className="eyebrow">LEGAL LENS · KNOWLEDGE REPOSITORY</p>

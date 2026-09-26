@@ -129,7 +129,7 @@ export default function DocumentsPage() {
 
   return (
     <AppShell onUploadClick={() => fileInputRef.current?.click()}>
-      <main className="workspace">
+      <main id="main-content" tabIndex={-1} className="workspace">
         <header className="topbar">
           <div>
             <p className="eyebrow">LEGAL LENS · DOCUMENT REPOSITORY</p>
@@ -216,6 +216,8 @@ export default function DocumentsPage() {
         {/* Search and stats bar */}
         <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', marginBottom: '20px', gap: '16px', flexWrap: 'wrap' }}>
           <input
+            id="doc-search-input"
+            aria-label="Search documents by name or classification"
             type="text"
             value={search}
             onChange={(e) => setSearch(e.target.value)}
