@@ -17,7 +17,7 @@ export default function AppShell({ children, onUploadClick, uploading }: AppShel
     { href: '/documents', label: 'Docs', fullLabel: 'Agreements', icon: '▤' },
     { href: '/compare', label: 'Compare', fullLabel: 'Redline Compare', icon: '⟷' },
     { href: '/saved-questions', label: 'Research', fullLabel: 'Saved Research', icon: '♡' },
-    { href: '/help', label: 'Methodology', fullLabel: 'Trust & Engine', icon: '?' },
+    { href: '/help', label: 'Methodology', fullLabel: 'AI & Methodology', icon: '?' },
   ];
 
   return (
@@ -28,7 +28,7 @@ export default function AppShell({ children, onUploadClick, uploading }: AppShel
           <span className="brand-mark">⚖</span>
           <div className="brand-text">
             <span className="brand-title">LEGAL<span>LENS</span></span>
-            <span className="brand-tagline">AIR-GAPPED WORKSPACE</span>
+            <span className="brand-tagline">GenAI LEGAL ASSISTANCE</span>
           </div>
         </Link>
 
@@ -54,7 +54,7 @@ export default function AppShell({ children, onUploadClick, uploading }: AppShel
             <span className="brand-mark">⚖</span>
             <div className="brand-text">
               <span className="brand-title">LEGAL<span>LENS</span></span>
-              <span className="brand-tagline">CONTRACT INTELLIGENCE</span>
+              <span className="brand-tagline">GenAI LEGAL ASSISTANCE</span>
             </div>
           </div>
         </Link>
@@ -78,35 +78,19 @@ export default function AppShell({ children, onUploadClick, uploading }: AppShel
 
         <div className="sidebar-bottom">
           <div className="privacy-note">
-            <span className="privacy-pulse" />
-            <div className="privacy-text">
-              <strong>Private &amp; Air-Gapped</strong>
-              <small>Zero third-party telemetry</small>
+            <span className="status-dot green"></span>
+            <div>
+              <p className="privacy-title">Gemini GenAI Active</p>
+              <p className="privacy-sub">Google Gemini 1.5 Flash</p>
             </div>
           </div>
         </div>
       </aside>
 
-      {/* Main Content Viewport */}
-      <div className="shell-content">{children}</div>
-
-      {/* Mobile Bottom Floating Dock (Fitts' Law thumb zone) */}
-      <nav className="mobile-bottom-nav" aria-label="Mobile Navigation">
-        {navItems.map((item) => {
-          const isActive = currentPath === item.href;
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`mobile-nav-tab ${isActive ? 'active' : ''}`}
-            >
-              <span className="mobile-nav-icon">{item.icon}</span>
-              <span className="mobile-nav-label">{item.label}</span>
-              {isActive && <span className="mobile-nav-indicator" />}
-            </Link>
-          );
-        })}
-      </nav>
+      {/* Main Content Area */}
+      <div className="content-area">
+        {children}
+      </div>
     </div>
   );
 }
