@@ -752,7 +752,7 @@ export default function Home() {
 
   return (
     <AppShell onUploadClick={() => fileInputRef.current?.click()} uploading={uploading}>
-      <main className="workspace">
+      <main className="workspace workspace-fade-in">
         {/* Workspace Top Bar */}
         <header className="topbar">
           <div>
@@ -882,6 +882,20 @@ export default function Home() {
         </div>
 
         {/* WORKSPACE MAIN SPLIT VIEW */}
+        {loadingDocs ? (
+          <div className="workspace-split" style={{ opacity: 0.6 }}>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {[1, 2, 3].map((i) => (
+                <div key={i} className="skeleton" style={{ height: i === 1 ? '160px' : '100px', width: '100%' }} />
+              ))}
+            </div>
+            <div style={{ display: 'flex', flexDirection: 'column', gap: '20px' }}>
+              {[1, 2, 3, 4].map((i) => (
+                <div key={i} className="skeleton" style={{ height: '64px', width: '100%' }} />
+              ))}
+            </div>
+          </div>
+        ) : (
         <div
           className={`workspace-split ${
             viewMode === 'analysis' ? 'workspace-analysis-only' : viewMode === 'reader' ? 'workspace-reader-only' : ''
@@ -1438,6 +1452,7 @@ export default function Home() {
             </div>
           )}
         </div>
+        )} {/* end loadingDocs ternary */}
 
         {/* Footer */}
         <footer>

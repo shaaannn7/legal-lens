@@ -11,6 +11,7 @@ export default function DocumentsPage() {
   const [notice, setNotice] = useState('');
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editName, setEditName] = useState('');
+  const [pendingDeleteId, setPendingDeleteId] = useState<string | null>(null);
 
   useEffect(() => {
     fetchDocuments();
@@ -72,8 +73,12 @@ export default function DocumentsPage() {
       setNotice('Cannot remove the only remaining document.');
       return;
     }
-    if (!confirm(`Are you sure you want to remove "${name}" from your workspace?`)) return;
-
+    if (pendingDeleteId !== id) {
+      setPendingDeleteId(id);
+      return;
+    }
+    // Confirmed — proceed with deletion
+    setPendingDeleteId(null);
     try {
       const res = await fetch(`/api/documents/${id}`, { method: 'DELETE' });
       if (res.ok) {
@@ -274,7 +279,19 @@ export default function DocumentsPage() {
                     <Link href={`/compare?base=${doc.id}`} className="outline-btn" style={{ textDecoration: 'none' }}>Compare</Link>
                     <button className="outline-btn" onClick={() => { setEditingId(doc.id); setEditName(doc.filename); }}>Rename</button>
                     <button className="outline-btn" onClick={() => downloadText(doc)}>Download</button>
-                    <button className="outline-btn" onClick={() => handleDelete(doc.id, doc.filename)} style={{ color: 'var(--rose)' }}>Delete</button>
+                    {pendingDeleteId === doc.id ? (
+                      <>
+                        <button
+                          style={{ color: 'var(--rose)', border: '1px solid var(--rose-border)', background: 'var(--rose-bg)', borderRadius: '6px', padding: '5px 10px', fontSize: '11px', cursor: 'pointer', fontFamily: "'Space Mono', monospace" }}
+                          onClick={() => handleDelete(doc.id, doc.filename)}
+                        >
+                          Confirm Delete
+                        </button>
+                        <button className="outline-btn" style={{ fontSize: '11px' }} onClick={() => setPendingDeleteId(null)}>Cancel</button>
+                      </>
+                    ) : (
+                      <button className="outline-btn" onClick={() => handleDelete(doc.id, doc.filename)} style={{ color: 'var(--rose)' }}>Delete</button>
+                    )}
                   </div>
                 </div>
               );

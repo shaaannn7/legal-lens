@@ -515,6 +515,43 @@ select option {
   box-shadow: 0 0 6px var(--cyan);
 }
 
+.eyebrow.amber {
+  color: var(--amber);
+}
+
+/* ── Loading Shimmer Skeleton ── */
+@keyframes shimmerSlide {
+  0% { background-position: -300px 0; }
+  100% { background-position: 300px 0; }
+}
+
+.skeleton {
+  background: linear-gradient(90deg, var(--panel) 25%, var(--panel-raised) 50%, var(--panel) 75%);
+  background-size: 600px 100%;
+  animation: shimmerSlide 1.6s infinite linear;
+  border-radius: var(--r-sm);
+}
+
+/* ── Toast Notification Float-In ── */
+@keyframes toastFloatIn {
+  from { opacity: 0; transform: translateY(8px) scale(0.96); }
+  to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+.toast-float {
+  animation: toastFloatIn 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/* ── Page Transition Fade ── */
+@keyframes pageFadeIn {
+  from { opacity: 0; transform: translateY(6px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.workspace-fade-in {
+  animation: pageFadeIn 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
 .topbar h1 {
   font-family: 'Cormorant Garamond', Georgia, serif;
   font-size: 32px;
