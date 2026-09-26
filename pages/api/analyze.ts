@@ -1,21 +1,26 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getDocumentById, getAllDocuments } from '@/services/documentStore';
-import { analyzeDocument } from '@/services/analyzer';
-import { answerDocumentQuestion } from '@/services/qaEngine';
+import { analyzeDocumentWithGemini, answerQuestionWithGemini } from '@/services/geminiService';
+import { checkRateLimit, sanitizePromptInput } from '@/utils/security';
 import { AnalyzeResponse } from '@/types';
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<AnalyzeResponse | { error: string }>,
 ) {
+  // Enforce security rate limiting
+  if (!checkRateLimit(req, res, 30, 60 * 1000)) return;
+
   if (req.method !== 'POST') {
     res.setHeader('Allow', 'POST');
     return res.status(405).json({ error: 'Only POST requests are supported.' });
   }
 
-  const question = typeof req.body?.question === 'string' ? req.body.question.trim() : '';
+  const rawQuestion = typeof req.body?.question === 'string' ? req.body.question : '';
+  const question = sanitizePromptInput(rawQuestion);
+
   if (!question) {
-    return res.status(400).json({ error: 'A question is required.' });
+    return res.status(400).json({ error: 'A valid question is required.' });
   }
 
   const documentId = typeof req.body?.documentId === 'string' ? req.body.documentId.trim() : '';
@@ -28,7 +33,7 @@ export default function handler(
     doc = allDocs.find((d) => d.filename.toLowerCase() === filename.toLowerCase());
   }
 
-  // If a specific document was requested but not found, return explicit 404
+  // If a specific document was requested but not found
   if ((documentId || filename) && !doc) {
     return res.status(404).json({
       error: `Specified document "${documentId || filename}" was not found in the workspace repository.`,
@@ -47,8 +52,9 @@ export default function handler(
     });
   }
 
-  const analysis = analyzeDocument(doc);
-  const result = answerDocumentQuestion(doc, analysis, question);
+  // Call Gemini AI-enhanced document analysis & Q&A
+  const analysis = await analyzeDocumentWithGemini(doc);
+  const result = await answerQuestionWithGemini(doc, analysis, question);
 
   return res.status(200).json(result);
 }

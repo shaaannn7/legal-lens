@@ -1,6 +1,7 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getDocumentById, deleteDocument, renameDocument } from '@/services/documentStore';
-import { analyzeDocument } from '@/services/analyzer';
+import { analyzeDocumentWithGemini } from '@/services/geminiService';
+import { checkRateLimit, sanitizeInput } from '@/utils/security';
 import { DocumentMeta, DocumentAnalysis } from '@/types';
 
 type DocumentDetailResponse = {
@@ -8,10 +9,12 @@ type DocumentDetailResponse = {
   analysis: DocumentAnalysis;
 };
 
-export default function handler(
+export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<DocumentDetailResponse | { success: boolean; message: string } | { error: string }>,
 ) {
+  if (!checkRateLimit(req, res, 40, 60 * 1000)) return;
+
   const { id } = req.query;
   const docId = Array.isArray(id) ? id[0] : id;
 
@@ -25,7 +28,7 @@ export default function handler(
   }
 
   if (req.method === 'GET') {
-    const analysis = analyzeDocument(doc);
+    const analysis = await analyzeDocumentWithGemini(doc);
     return res.status(200).json({
       document: doc,
       analysis,
@@ -46,12 +49,13 @@ export default function handler(
       return res.status(400).json({ error: 'A non-empty filename is required for renaming.' });
     }
 
-    const updated = renameDocument(docId, filename.trim());
+    const cleanFilename = sanitizeInput(filename.trim(), 255);
+    const updated = renameDocument(docId, cleanFilename);
     if (!updated) {
       return res.status(500).json({ error: 'Failed to rename document.' });
     }
 
-    const analysis = analyzeDocument(updated);
+    const analysis = await analyzeDocumentWithGemini(updated);
     return res.status(200).json({
       document: updated,
       analysis,

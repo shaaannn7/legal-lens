@@ -7,9 +7,10 @@
     "build": "next build",
     "start": "next start",
     "typecheck": "tsc --noEmit",
-    "test": "tsc src/services/*.ts --outDir .test-dist --module commonjs --target es2020 --esModuleInterop --skipLibCheck && node --test tests/services.test.js"
+    "test": "tsc src/services/*.ts src/utils/*.ts --outDir .test-dist --module commonjs --target es2020 --esModuleInterop --skipLibCheck && node --test tests/services.test.js"
   },
   "dependencies": {
+    "@google/generative-ai": "^0.24.1",
     "mammoth": "^1.12.3",
     "next": "^14.2.0",
     "pdf-parse": "^1.1.1",

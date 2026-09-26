@@ -1,7 +1,8 @@
 import type { NextApiRequest, NextApiResponse } from 'next';
 import { getAllDocuments, addDocument } from '@/services/documentStore';
 import { parseDocument } from '@/services/documentParser';
-import { analyzeDocument } from '@/services/analyzer';
+import { analyzeDocumentWithGemini } from '@/services/geminiService';
+import { checkRateLimit, sanitizeInput } from '@/utils/security';
 import { DocumentMeta, DocumentAnalysis } from '@/types';
 
 type DocumentsResponse = {
@@ -19,7 +20,7 @@ type CreateDocumentResponse = {
 export const config = {
   api: {
     bodyParser: {
-      sizeLimit: '15mb',
+      sizeLimit: '10mb',
     },
   },
 };
@@ -28,12 +29,17 @@ export default async function handler(
   req: NextApiRequest,
   res: NextApiResponse<DocumentsResponse | CreateDocumentResponse | { error: string }>,
 ) {
+  // Rate limiting check
+  if (!checkRateLimit(req, res, 40, 60 * 1000)) return;
+
   if (req.method === 'GET') {
     const docs = getAllDocuments();
-    const result = docs.map((doc) => ({
-      document: doc,
-      analysis: analyzeDocument(doc),
-    }));
+    const result = await Promise.all(
+      docs.map(async (doc) => ({
+        document: doc,
+        analysis: await analyzeDocumentWithGemini(doc),
+      })),
+    );
     return res.status(200).json({ documents: result });
   }
 
@@ -41,12 +47,14 @@ export default async function handler(
     const { filename, content, fileType, sizeBytes, mimeType } = req.body || {};
 
     if (!filename || typeof filename !== 'string') {
-      return res.status(400).json({ error: 'A filename is required for ingestion.' });
+      return res.status(400).json({ error: 'A valid filename is required for ingestion.' });
     }
+
+    const cleanFilename = sanitizeInput(filename.trim(), 255);
 
     try {
       const parsed = await parseDocument({
-        filename: filename.trim(),
+        filename: cleanFilename,
         fileType,
         content: typeof content === 'string' ? content : '',
         sizeBytes: typeof sizeBytes === 'number' ? sizeBytes : undefined,
@@ -54,7 +62,7 @@ export default async function handler(
       });
 
       addDocument(parsed);
-      const analysis = analyzeDocument(parsed);
+      const analysis = await analyzeDocumentWithGemini(parsed);
 
       return res.status(201).json({
         document: parsed,
