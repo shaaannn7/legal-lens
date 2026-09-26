@@ -1,0 +1,25 @@
+{
+  "name": "legal-lens",
+  "version": "0.1.0",
+  "private": true,
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "typecheck": "tsc --noEmit",
+    "test": "tsc src/services/*.ts --outDir .test-dist --module commonjs --target es2020 --esModuleInterop --skipLibCheck && node --test tests/services.test.js"
+  },
+  "dependencies": {
+    "mammoth": "^1.12.3",
+    "next": "^14.2.0",
+    "pdf-parse": "^1.1.1",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.14.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.5.0"
+  }
+}

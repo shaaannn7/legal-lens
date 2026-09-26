@@ -1,0 +1,10 @@
+node_modules
+.next
+.test-dist
+.git
+.gitignore
+*.log
+data/*.json
+coverage
+Dockerfile*
+README*
